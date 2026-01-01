@@ -1,0 +1,31 @@
+# rbac-ml.service
+# Model-based detector that flips the SELinux boolean "ml_block".
+[Unit]
+Description=RBAC-POC ML Detector
+After=rbac-trace-setup.service network.target
+Wants=rbac-trace-setup.service
+ConditionPathExists=/opt/rbac-poc/bin/model_daemon.py
+
+[Service]
+Type=simple
+User=rbac
+Group=rbac
+Environment=PYTHONUNBUFFERED=1
+Environment=RBAC_LOG_DIR=/opt/rbac-poc/logs
+ExecStart=/opt/rbac-poc/venv/bin/python /opt/rbac-poc/bin/model_daemon.py \
+  --model /opt/rbac-poc/artefacts/best_model.joblib \
+  --preproc /opt/rbac-poc/artefacts/preprocessor.joblib \
+  --feature-order /opt/rbac-poc/artefacts/feature_order.json \
+  --keys /opt/rbac-poc/artefacts/ftrace_keys.json \
+  --csv /opt/rbac-poc/logs/decisions_model.csv \
+  --log /opt/rbac-poc/logs/model_daemon.log \
+  --block-threshold 0.50 \
+  --interval 0.20
+Restart=always
+RestartSec=2
+
+AmbientCapabilities=
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
