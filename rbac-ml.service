@@ -1,0 +1,28 @@
+[Unit]
+Description=RBAC-POC ML Detector
+After=rbac-trace-setup.service network.target
+Wants=rbac-trace-setup.service
+
+[Service]
+Type=simple
+User=rbac
+Group=rbac
+WorkingDirectory=/opt/rbac-poc
+ExecStart=/opt/rbac-poc/venv/bin/python /opt/rbac-poc/bin/model_daemon.py \
+  --model /opt/rbac-poc/artefacts/best_model.joblib \
+  --preproc /opt/rbac-poc/artefacts/preprocessor.joblib \
+  --feature-order /opt/rbac-poc/artefacts/feature_order.json \
+  --keys /opt/rbac-poc/artefacts/ftrace_keys.json \
+  --csv  /opt/rbac-poc/logs/decisions_ml.csv \
+  --block-threshold 0.50 --period 1.0
+Restart=on-failure
+RestartSec=3s
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=yes
+AmbientCapabilities=
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target
