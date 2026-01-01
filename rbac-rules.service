@@ -1,0 +1,27 @@
+[Unit]
+Description=RBAC-POC Rules Detector
+After=rbac-trace-setup.service network.target
+Wants=rbac-trace-setup.service
+
+[Service]
+Type=simple
+User=rbac
+Group=rbac
+WorkingDirectory=/opt/rbac-poc
+ExecStart=/opt/rbac-poc/venv/bin/python /opt/rbac-poc/bin/rules_daemon.py \
+  --rules /opt/rbac-poc/artefacts/rules.json \
+  --keys  /opt/rbac-poc/artefacts/ftrace_keys.json \
+  --csv   /opt/rbac-poc/logs/decisions_rules.csv \
+  --log   /opt/rbac-poc/logs/rules_daemon.log \
+  --penc-threshold 0.50
+Restart=on-failure
+RestartSec=3s
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=yes
+AmbientCapabilities=
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target
