@@ -1,0 +1,30 @@
+# rbac-rules.service
+# User-space rule detector that flips the SELinux boolean "rule_block".
+[Unit]
+Description=RBAC-POC Rules Detector
+After=rbac-trace-setup.service network.target
+Wants=rbac-trace-setup.service
+ConditionPathExists=/opt/rbac-poc/bin/rules_daemon.py
+
+[Service]
+Type=simple
+User=rbac
+Group=rbac
+Environment=PYTHONUNBUFFERED=1
+Environment=RBAC_LOG_DIR=/opt/rbac-poc/logs
+ExecStart=/opt/rbac-poc/venv/bin/python /opt/rbac-poc/bin/rules_daemon.py \
+  --rules /opt/rbac-poc/artefacts/rules.json \
+  --keys  /opt/rbac-poc/artefacts/ftrace_keys.json \
+  --csv   /opt/rbac-poc/logs/decisions_rules.csv \
+  --log   /opt/rbac-poc/logs/rules_daemon.log \
+  --penc-threshold 0.50 \
+  --interval 0.20
+Restart=always
+RestartSec=2
+
+# Allow toggling SELinux boolean via helper; keep least privilege
+AmbientCapabilities=
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
