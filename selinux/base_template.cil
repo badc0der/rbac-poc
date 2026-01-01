@@ -1,0 +1,10 @@
+(block encryption_rbac_base
+(type encryption_t) (type crypto_exec_t) (type user_home_t)
+(typeattribute enc_whitelisted_app)
+(typeattribute enc_whitelisted_user)
+(boolean rule_block false) (boolean ml_block false)
+(allow encryption_t user_home_t (file (read getattr open)))
+(allow encryption_t crypto_exec_t (file (read execute entrypoint)))
+(booleanif (and (not rule_block) (not ml_block))
+(true (allow encryption_t user_home_t (file (write append)))))
+)
