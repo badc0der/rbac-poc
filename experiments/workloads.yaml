@@ -1,0 +1,9 @@
+- cmd: "openssl enc -aes-256-cbc -salt -in big.txt -out big.txt.enc -k secret"
+  label: enc
+- cmd: "./sample_ransomware.bin"
+  label: enc
+- cmd: "tar -czf archive.tgz /usr/share/doc"
+  label: benign
+- cmd: "python benign_script.py"
+  label: benign
+
