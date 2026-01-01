@@ -1,0 +1,16 @@
+# rbac-trace-setup.service
+# One-shot unit to prepare ftrace for the 'rbac' user/group.
+[Unit]
+Description=RBAC-POC TraceFS Setup
+After=local-fs.target
+ConditionPathExists=/opt/rbac-poc/bin/ftrace-setup.sh
+
+[Service]
+Type=oneshot
+ExecStart=/opt/rbac-poc/bin/ftrace-setup.sh
+User=root
+Group=root
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
